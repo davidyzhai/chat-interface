@@ -13,13 +13,35 @@ export async function POST(req: Request) {
       }),
     });
 
-    const data = await ollamaResponse.json();
-    
-    // Ensure the response includes a 'content' property
-    if (data && data.message && data.message.content) {
+    const reader = ollamaResponse.body?.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let responseData = "";
+
+    while (!done) {
+      const { value, done: readerDone } = await reader!.read();
+      done = readerDone;
+      responseData += decoder.decode(value, { stream: true });
+    }
+
+    // Now process the responseData, which is in NDJSON format
+    const jsonData = responseData.split("\n").map((line) => {
+      try {
+        return JSON.parse(line);
+      } catch (error) {
+        return null;
+      }
+    }).filter(Boolean);  // Filter out any null values
+
+    console.log("Parsed Ollama Response:", jsonData);
+
+    // Check if the last message is 'done' and combine content
+    const messageContent = jsonData.map((item) => item?.message?.content).join('');
+
+    if (messageContent) {
       return NextResponse.json({
         message: {
-          content: data.message.content,
+          content: messageContent,
         },
       });
     } else {
@@ -29,6 +51,7 @@ export async function POST(req: Request) {
     }
 
   } catch (error) {
+    console.error("Error in API handler:", error);
     return NextResponse.json({ error: "Failed to fetch response from Ollama" }, { status: 500 });
   }
 }
