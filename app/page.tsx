@@ -37,9 +37,9 @@ export default function Home() {
   }, [chatHistory, isLoading]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col items-center min-h-screen bg-[#212121] text-white">
       {/* Header */}
-      <header className="bg-gray-900 shadow py-4 w-full flex justify-center">
+      <header className="bg-[#212121] shadow py-4 w-full flex justify-center">
         <h1 className="text-2xl font-bold text-white">ChatGPT</h1>
       </header>
 
@@ -69,7 +69,7 @@ export default function Home() {
       </main>
 
       {/* Input area */}
-      <footer className="bg-gray-900 py-4 shadow w-full flex justify-center">
+      <footer className="bg-[#212121] py-4 shadow w-full flex justify-center">
         <div className="w-full max-w-3xl px-4">
           <form onSubmit={handleSubmit} className="flex items-center space-x-4">
             <input
@@ -77,7 +77,11 @@ export default function Home() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message ChatGPT"
-              className="flex-grow p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white bg-gray-800"
+              className="flex-grow p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              style={{
+                backgroundColor: '#303030',
+                color: '#B4B4B4', // Placeholder text color
+              }}
             />
             <button
               type="submit"
