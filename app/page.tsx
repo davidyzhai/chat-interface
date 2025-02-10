@@ -6,6 +6,7 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isChatStarted, setIsChatStarted] = useState(false); // New state to track if chat has started
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,6 +17,7 @@ export default function Home() {
     setChatHistory((prev) => [...prev, newMessage]);
     setMessage("");
     setIsLoading(true);
+    setIsChatStarted(true); // Mark that the chat has started
 
     const response = await fetch("/api/chat", {
       method: "POST",
@@ -37,10 +39,10 @@ export default function Home() {
   }, [chatHistory, isLoading]);
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-[#212121] text-white">
+    <div className="flex flex-col items-center min-h-screen bg-[#212121] text-[#ECECEC]">
       {/* Header */}
       <header className="bg-[#212121] shadow py-4 w-full flex justify-center">
-        <h1 className="text-2xl font-bold text-white">ChatGPT</h1>
+        <h1 className="text-2xl font-bold">ChatGPT</h1>
       </header>
 
       {/* Chat area */}
@@ -49,20 +51,30 @@ export default function Home() {
           ref={chatContainerRef}
           className="flex flex-col space-y-4 overflow-y-auto pb-4 flex-grow"
         >
-          {chatHistory.map((msg, index) => (
-            <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+          {isChatStarted ? (
+            chatHistory.map((msg, index) => (
               <div
-                className={`rounded-xl p-4 max-w-md text-sm shadow-sm transition-all duration-300 ${
-                  msg.role === "user" ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300"
-                }`}
+                key={index}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {msg.content}
+                <div
+                  className={`rounded-xl p-4 max-w-md text-sm shadow-sm transition-all duration-300 ${
+                    msg.role === "user" ? "text-white" : "text-gray-300"
+                  }`}
+                >
+                  {msg.content}
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="flex justify-center items-center flex-grow">
+              <p className="text-lg text-gray-400">What can I help you with?</p>
             </div>
-          ))}
+          )}
+
           {isLoading && (
             <div className="flex justify-start">
-              <div className="rounded-xl p-4 max-w-md bg-gray-700 text-gray-300">Typing…</div>
+              <div className="rounded-xl p-4 max-w-md text-gray-300">Typing…</div>
             </div>
           )}
         </div>
@@ -77,10 +89,10 @@ export default function Home() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message ChatGPT"
-              className="flex-grow p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+              className="flex-grow p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-[#ECECEC]"
               style={{
                 backgroundColor: '#303030',
-                color: '#B4B4B4', // Placeholder text color
+                color: '#B4B4B4',
               }}
             />
             <button
