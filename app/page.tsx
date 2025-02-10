@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 
 export default function Home() {
   const [message, setMessage] = useState("");
@@ -11,13 +12,11 @@ export default function Home() {
     e.preventDefault();
     if (!message.trim()) return;
 
-    // Append the user message and clear the input
     const newMessage = { role: "user", content: message };
     setChatHistory((prev) => [...prev, newMessage]);
     setMessage("");
     setIsLoading(true);
 
-    // Send message to the API
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -31,7 +30,6 @@ export default function Home() {
     setIsLoading(false);
   };
 
-  // Auto-scroll to bottom when chatHistory or loading state changes
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -39,19 +37,17 @@ export default function Home() {
   }, [chatHistory, isLoading]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+    <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <header className="bg-gray-800 shadow py-4">
-        <div className="max-w-3xl mx-auto px-4">
-          <h1 className="text-2xl font-bold text-white">ChatGPT</h1>
-        </div>
+      <header className="bg-gray-900 shadow py-4 w-full flex justify-center">
+        <h1 className="text-2xl font-bold text-white">ChatGPT</h1>
       </header>
 
       {/* Chat area */}
-      <main className="flex-grow max-w-3xl mx-auto w-full px-4 py-6">
+      <main className="flex-grow w-full max-w-3xl px-4 py-6 flex flex-col">
         <div
           ref={chatContainerRef}
-          className="flex flex-col space-y-4 overflow-y-auto h-[calc(100vh-160px)]"
+          className="flex flex-col space-y-4 overflow-y-auto pb-4 flex-grow"
         >
           {chatHistory.map((msg, index) => (
             <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -73,22 +69,22 @@ export default function Home() {
       </main>
 
       {/* Input area */}
-      <footer className="bg-gray-800 py-4 shadow">
-        <div className="max-w-3xl mx-auto px-4">
-          <form onSubmit={handleSubmit} className="flex space-x-4">
+      <footer className="bg-gray-900 py-4 shadow w-full flex justify-center">
+        <div className="w-full max-w-3xl px-4">
+          <form onSubmit={handleSubmit} className="flex items-center space-x-4">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message ChatGPT"
-              className="flex-grow p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-grow p-4 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-white bg-gray-800"
             />
             <button
               type="submit"
-              className="p-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none"
+              className="p-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none flex items-center justify-center"
               disabled={isLoading}
             >
-              Send
+              <PaperAirplaneIcon className="h-5 w-5" />
             </button>
           </form>
         </div>
